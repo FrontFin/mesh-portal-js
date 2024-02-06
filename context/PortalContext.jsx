@@ -36,9 +36,7 @@ const PortalProvider = ({ children }) => {
         try {
           if (!portal.address) {
             setWalletStatus('Creating your wallet.  Hang tight ;) ');
-            await portal.createWallet({
-              featureFlags: { optimized: true },
-            });
+            await portal.createWallet();
             setIsPortalReady(true);
           }
 

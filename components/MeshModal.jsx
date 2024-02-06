@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Dialog from '@mui/material/Dialog';
 import PropTypes from 'prop-types';
 
-import { createFrontConnection } from '@front-finance/link';
+import { createLink } from '@meshconnect/web-link-sdk';
 
 const MeshModal = ({
   open,
@@ -14,25 +14,25 @@ const MeshModal = ({
   pageLoaded,
   authData,
 }) => {
-  const [frontConnection, setFrontConnection] = useState(null);
+  const [linkConnection, setLinkConnection] = useState(null);
   const CLIENT_ID = process.env.NEXT_PUBLIC_PORTAL_CLIENT_KEY;
 
   useEffect(() => {
     const connectionOptions = {
       clientId: CLIENT_ID,
-      onBrokerConnected: (authData) => {
-        console.info('FRONT SUCCESS', authData);
+      onIntegrationConnected: (authData) => {
+        console.info('Mesh SUCCESS', authData);
         onSuccess(authData);
       },
       onEvent: (event) => {
-        console.info('FRONT EVENT', event);
+        console.info('Mesh EVENT', event);
       },
       onExit: (error) => {
         if (error) {
-          console.error(`[FRONT ERROR] ${error}`);
+          console.error(`[Mesh ERROR] ${error}`);
         }
         if (onExit) {
-          console.info('FRONT EXIT');
+          console.info('Mesh EXIT');
           onExit();
         }
       },
@@ -59,20 +59,20 @@ const MeshModal = ({
         },
       ];
     }
-    setFrontConnection(createFrontConnection(connectionOptions));
+    setLinkConnection(createLink(connectionOptions));
   }, []);
 
   useEffect(() => {
-    if (open && frontConnection) {
-      frontConnection.openLink(link);
+    if (open && linkConnection) {
+      linkConnection.openLink(link);
     }
 
     return () => {
-      if (frontConnection) {
-        frontConnection.closePopup();
+      if (linkConnection) {
+        linkConnection.closeLink();
       }
     };
-  }, [frontConnection, open, link, pageLoaded]);
+  }, [linkConnection, open, link, pageLoaded]);
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth></Dialog>
