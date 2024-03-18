@@ -5,7 +5,7 @@ import WalletBalanceCard from '../components/WalletInfo';
 import Header from '../components/Header';
 
 export default function ParentComponent() {
-  const { isPortalReady, portalError, walletStatus } =
+  const { isPortalReady, portalError, walletStatus, walletAddress } =
     useContext(PortalContext);
   const [authData, setAuthData] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -19,6 +19,7 @@ export default function ParentComponent() {
     console.log('authData has been updated:', authData);
   }, [authData]);
 
+  console.log(isPortalReady, walletAddress, walletStatus);
   if (portalError) {
     return (
       <Typography color="error" align="center">
@@ -27,7 +28,7 @@ export default function ParentComponent() {
     );
   }
 
-  if (!isPortalReady) {
+  if (!isPortalReady && walletStatus) {
     return (
       <>
         <Header />

@@ -29,21 +29,19 @@ const PortalProvider = ({ children }) => {
         gatewayConfig: gatewayConfig[chainId],
       });
       console.log('Setting portal instance', portal);
-
       setPortalInstance(portal);
 
       portal.onReady(async () => {
         try {
           if (!portal.address) {
             setWalletStatus('Creating your wallet.  Hang tight ;) ');
-            await portal.createWallet({
-              featureFlags: { optimized: true },
-            });
+            await portal.createWallet();
             setIsPortalReady(true);
           }
 
           console.log('Portal is ready, calling onReady callback');
           setWalletAddress(portal.address);
+          console.log(portal.address, walletAddress);
           setChain(chainId);
           setIsPortalReady(true);
         } catch (error) {
