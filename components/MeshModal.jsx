@@ -59,6 +59,7 @@ const MeshModal = ({
         },
       ];
     }
+    console.log('connectionOptions', connectionOptions);
     setLinkConnection(createLink(connectionOptions));
   }, []);
 

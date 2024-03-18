@@ -15,7 +15,7 @@
     "@meshconnect/web-link-sdk": "^2.0.1",
     "@mui/icons-material": "^5.14.18",
     "@mui/material": "^5.14.18",
-    "@portal-hq/web": "^0.1.2",
+    "@portal-hq/web": "^1.0.4",
     "ethers": "^6.8.1",
     "next": "14.0.2",
     "react": "^18",

@@ -29,7 +29,6 @@ const PortalProvider = ({ children }) => {
         gatewayConfig: gatewayConfig[chainId],
       });
       console.log('Setting portal instance', portal);
-
       setPortalInstance(portal);
 
       portal.onReady(async () => {
@@ -42,6 +41,7 @@ const PortalProvider = ({ children }) => {
 
           console.log('Portal is ready, calling onReady callback');
           setWalletAddress(portal.address);
+          console.log(portal.address, walletAddress);
           setChain(chainId);
           setIsPortalReady(true);
         } catch (error) {

@@ -38,23 +38,29 @@ function TransactionsDashboard() {
   const [loadingTransactions, setLoadingTransactions] = useState(false);
   const [showTransactionsTable, setShowTransactionsTable] = useState(false);
   const [page, setPage] = useState(0);
+  const [transactionError, setTransactionError] = useState(false);
 
   useEffect(() => {
     const getTransactions = async () => {
       try {
         setLoadingTransactions(true);
         const fetchTransactions = await portalInstance.getTransactions();
-
-        setTransactions(fetchTransactions);
+        if (fetchTransactions.error) {
+          setTransactionError(true);
+        } else {
+          setTransactions(fetchTransactions);
+          setTransactionError(false);
+        }
       } catch (error) {
-        console.log('error', error);
+        console.log('hit error', error);
+        setTransactionError(true);
       } finally {
         setLoadingTransactions(false);
       }
     };
 
     getTransactions();
-  }, [chain]);
+  }, [chain, portalInstance]);
 
   if (loadingTransactions) {
     return <CircularProgress />;
@@ -163,10 +169,13 @@ function TransactionsDashboard() {
           variant="contained"
           color="secondary"
           style={{ marginTop: '20px' }}
+          disabled={transactionError}
           size="small"
           onClick={() => setShowTransactionsTable(true)}
         >
-          Show Transactions Table
+          {transactionError
+            ? 'No Transactions Found'
+            : 'Show Transactions Table'}
         </Button>
       ) : (
         renderTable(transactions, [
