@@ -13,7 +13,7 @@ import SendModal from './SendModal';
 import PropTypes from 'prop-types';
 
 function WalletBalanceCard({ setAuthData, authData }) {
-  const { portalInstance, walletAddress, isPortalReady } =
+  const { portalInstance, walletAddress, isPortalReady, chain } =
     useContext(PortalContext);
   const [walletBalance, setWalletBalance] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -26,10 +26,12 @@ function WalletBalanceCard({ setAuthData, authData }) {
   useEffect(() => {
     if (portalInstance) {
       const fetchWalletBalance = async () => {
+        console.log('fetchWalletBalance called');
         try {
           const response = await portalInstance.provider.request({
             method: 'eth_getBalance',
             params: [portalInstance.address, 'latest'],
+            chainId: `eip155:${chain}`, // Make sure chain is formatted correctly
           });
 
           const weiBalance = BigInt(response);
@@ -46,6 +48,7 @@ function WalletBalanceCard({ setAuthData, authData }) {
 
           setWalletBalance(formattedEthValue);
         } catch (err) {
+          console.log('Error fetching wallet balance:', err);
           setError(err);
         } finally {
           setLoading(false);
@@ -53,9 +56,13 @@ function WalletBalanceCard({ setAuthData, authData }) {
       };
       if (isPortalReady && portalInstance.address) {
         fetchWalletBalance();
+      } else {
+        console.log('isPortalReady or address not available');
       }
+    } else {
+      console.log('portalInstance not available');
     }
-  }, [portalInstance, portalInstance.address, authData]);
+  }, [portalInstance, portalInstance.address, authData, chain]);
 
   if (loading) {
     return <Typography>Loading wallet balance...</Typography>;
@@ -205,7 +212,7 @@ function WalletBalanceCard({ setAuthData, authData }) {
 }
 
 WalletBalanceCard.propTypes = {
-  setAuthData: PropTypes?.func,
-  authData: PropTypes?.object,
+  setAuthData: PropTypes.func,
+  authData: PropTypes.object,
 };
 export default WalletBalanceCard;
