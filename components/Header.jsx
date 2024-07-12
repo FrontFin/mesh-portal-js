@@ -11,9 +11,9 @@ function Header() {
 
   useEffect(() => {
     if (!isPortalReady) {
-      initiatePortalInstance(5);
+      initiatePortalInstance(chain); // Use the initial chain state
     }
-  }, []);
+  }, [isPortalReady]);
 
   const handleChange = (event) => {
     console.log(event.target.value);
@@ -34,8 +34,8 @@ function Header() {
             inputProps={{ 'aria-label': 'Without label' }}
             style={{ color: '#fff' }}
           >
-            <MenuItem value={1}>Mainnet</MenuItem>{' '}
-            <MenuItem value={5}>Testnet</MenuItem>
+            <MenuItem value={1}>Mainnet</MenuItem>
+            <MenuItem value={11155111}>Sepolia Testnet</MenuItem>
           </Select>
         </Box>
       </Toolbar>

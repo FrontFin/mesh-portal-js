@@ -1,19 +1,3 @@
-/**
- * Copyright 2023-present Mesh Connect, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import React, { useEffect, useState, useContext } from 'react';
 import { PortalContext } from '../context/PortalContext';
 import PropTypes from 'prop-types';
@@ -33,7 +17,7 @@ import {
 } from '@mui/material';
 
 function TransactionsDashboard() {
-  const { portalInstance, chain } = useContext(PortalContext);
+  const { portalInstance, chain } = useContext(PortalContext); // Ensure we get chainId from context
   const [transactions, setTransactions] = useState([]);
   const [loadingTransactions, setLoadingTransactions] = useState(false);
   const [showTransactionsTable, setShowTransactionsTable] = useState(false);
@@ -44,7 +28,11 @@ function TransactionsDashboard() {
     const getTransactions = async () => {
       try {
         setLoadingTransactions(true);
-        const fetchTransactions = await portalInstance.getTransactions();
+        console.log('Fetching transactions for chainId:', `eip155:${chain}`);
+        const fetchTransactions = await portalInstance.getTransactions(
+          `eip155:${chain}`
+        );
+
         if (fetchTransactions.error) {
           setTransactionError(true);
         } else {
@@ -59,8 +47,10 @@ function TransactionsDashboard() {
       }
     };
 
-    getTransactions();
-  }, [chain, portalInstance]);
+    if (portalInstance) {
+      getTransactions();
+    }
+  }, [chain, portalInstance]); // Make sure chainId and portalInstance are included as dependencies
 
   if (loadingTransactions) {
     return <CircularProgress />;
@@ -195,14 +185,15 @@ function TransactionsDashboard() {
     </div>
   );
 }
+
 TransactionsDashboard.propTypes = {
-  tab: PropTypes?.number,
-  showTable: PropTypes?.bool,
-  setShowTable: PropTypes?.func,
-  message: PropTypes?.string,
-  page: PropTypes?.number,
-  setPage: PropTypes?.func,
-  setLoadingTransactions: PropTypes?.func,
+  tab: PropTypes.number,
+  showTable: PropTypes.bool,
+  setShowTable: PropTypes.func,
+  message: PropTypes.string,
+  page: PropTypes.number,
+  setPage: PropTypes.func,
+  setLoadingTransactions: PropTypes.func,
 };
 
 export default TransactionsDashboard;

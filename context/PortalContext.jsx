@@ -11,30 +11,38 @@ const PortalProvider = ({ children }) => {
   const [portalError, setPortalError] = useState(null);
   const [walletAddress, setWalletAddress] = useState(null);
   const [isPortalReady, setIsPortalReady] = useState(false);
-  const [chain, setChain] = useState(5);
+  const [chain, setChain] = useState('11155111');
   const [walletStatus, setWalletStatus] = useState('Loading...');
 
   const initiatePortalInstance = (chainId) => {
     if (typeof window !== 'undefined') {
       const portalAPIKey = process.env.NEXT_PUBLIC_PORTAL_API_KEY;
-      const gatewayConfig = {
-        1: process.env.NEXT_PUBLIC_MAINNET_GATEWAY_URL,
-        5: process.env.NEXT_PUBLIC_GOERLI_GATEWAY_URL,
+      const rpcConfig = {
+        'eip155:1': process.env.NEXT_PUBLIC_MAINNET_GATEWAY_URL,
+        'eip155:11155111': process.env.NEXT_PUBLIC_SEPOLIA_GATEWAY_URL,
       };
+
+      const rpcUrl = rpcConfig[`eip155:${chainId}`];
+      if (!rpcUrl) {
+        console.error(`No RPC URL configured for chainId eip155:${chainId}`);
+        return;
+      }
 
       const portal = new Portal({
         apiKey: portalAPIKey,
-        autoApprove: process.env.NODE_ENV === 'development',
-        chainId,
-        gatewayConfig: gatewayConfig[chainId],
+        autoApprove: true,
+        rpcConfig: {
+          [`eip155:${chainId}`]: rpcUrl,
+        },
       });
+
       console.log('Setting portal instance', portal);
       setPortalInstance(portal);
 
       portal.onReady(async () => {
         try {
           if (!portal.address) {
-            setWalletStatus('Creating your wallet.  Hang tight ;) ');
+            setWalletStatus('Creating your wallet. Hang tight ;) ');
             await portal.createWallet();
             setIsPortalReady(true);
           }
@@ -46,7 +54,6 @@ const PortalProvider = ({ children }) => {
           setIsPortalReady(true);
         } catch (error) {
           console.error('Error during Portal onReady execution:', error);
-
           setPortalError(error);
         }
       });
